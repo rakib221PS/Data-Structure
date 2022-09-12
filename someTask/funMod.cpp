@@ -53,17 +53,20 @@ public:
                 }
                  
             }
-            for (int i = 0; i < capacityRow; i++)
-            {
-                delete[] mem[i];
-            }
-            delete[] mem;
-            for (int i = 0; i < capacityRow * 2; i++)
-            {
-                mem[i] = newMem[i];
-            }
-            
+            // for (int i = 0; i < capacityRow; i++)
+            // {
+            //     delete[] mem[i];
+            // }
+            // delete[] mem;
+            // for (int i = 0; i < capacityRow * 2; i++)
+            // {
+            //     mem[i] = newMem[i];
+            // }
+
+            delete [] mem;
+            mem = newMem;
             capacityRow *= 2;
+
         }
         mem[elements][0] = x;
         mem[elements][1] = y;
@@ -92,7 +95,8 @@ int fun(const int x, const int y){
     fu.push(x, y);
     while (!fu.empty())
     {
-        if (fu.top()[0] == 0 || fu.top()[1] == 0)
+        int *t = fu.top();
+        if (t[0] == 0 || t[1] == 0)
         {
             sum += 1;
         }
@@ -101,6 +105,7 @@ int fun(const int x, const int y){
             fu.push(x-1, y);
             fu.push(x, y-1);
         }
+        delete t;
         fu.pop();
     }
     return sum;

@@ -1,0 +1,127 @@
+You were quite close.
+
+First of all, let's fix some bus.
+One bug that You ahve is in the copy constructor.
+
+You have written this:
+
+             delete[] mem;
+             for (int i = 0; i < capacityRow * 2; i++)
+             {
+                 mem[i] = newMem[i];
+             }
+
+Please read it again, slowly:
+You first delete mem (so that memory is gone, not to be touched again)
+and then inside of the loop Yo uare accessing mem[i].  That's bad -- You
+are trying to read deleted memory.
+
+Instead, You simply need to set mem to newMem.  No tricks, just
+                         delete[] mem;
+                         mem = newMem;
+
+Second problem is in top.  You need to be careful with returning new
+memory allocated in any method.  If You do not delete it (and You do
+not), every call allocates new pair of ints, which never get deleted.
+Especially with this algorithm it will get ugly very fast.  Please
+notice that You even call top() twice (if fu.top()[0] == 0 || fu.top()[1] == 0),
+so each fu.top() call will allocate a new array which never gets
+deleted.
+
+You could do one of two things:
+First, delete the array returned by top, like so:
+     while (!fu.empty())
+     {
+             int *t = fu.top();
+         if (t[0] == 0 || t[1] == 0)
+         {
+             sum += 1;
+         }
+         else
+         {
+             fu.push(x-1, y);
+             fu.push(x, y-1);
+         }
+
+                 delete t;
+         fu.pop();
+     }
+
+Alternatively, You could simplify the data structure to hold structs
+like so:
+
+struct xy {
+        int x;
+        int y;
+};
+
+And make Your stack a stack of xy, like so:
+class Stack
+{
+     public:
+     int capacityRow, capacityColumn;
+     int elements;
+     xy *mem;
+
+
+This way You also do not need to perform complex initializations, and
+You do not need to allocate a new int[2] in top.  You can simply return
+a xy struct.
+
+Another way to do this is to use std::pair<int, int>, which is mostly
+the same as struct xy, albeit with some standard things already defined.
+
+
+One other way to do this is to use a simple stack of ints.
+Whenever I tell You do push a pair of ints, You first push one int and
+then another.  A top() is a bit more complicated, but since we always
+follow a top() with a pop(), You could simply use top() to get the
+second value from a pair, then pop(), then top() to get the first value
+from a pair(), and then another pop().  Not difficult.
+
+There is one more way, in which You would use an int64_t to store two
+ints, but that would require binary operations, and I do not want to
+make it too complicated for You.  Suffice it to say, that You can then
+use a stack of int64_t instead of a stack of int[2]
+
+
+This is not the end of Your problems, but these were the problems with
+Your stack.  The rest are the problems with the algorithm.
+
+There is not much that I can do to hint the solution except to write it
+out.  So what You should do is this:
+
+int fun(const int x, const int y){
+        int sum = 0;
+        Stack fu;
+        fu.push(x, y);
+        while (!fu.empty())
+        {
+                int *ab = fu.top():
+                int a = ab[0];
+                int b = ab[1];
+                delete ab;
+                fu.pop();
+                if (a == 0 || b == 0)
+                {
+                        sum += 1;
+                }
+                else
+                {
+                        fu.push(a-1, b);
+                        fu.push(a, b-1);
+                }
+        }
+        return sum;
+}
+
+pop was in the wrong place, and you mistakenly pushed x-1 and y, and
+then x and y - 1, instead of pushing what was at the current top of the
+stack.
+
+Still, You were quite close.  I'm sure You would have passed the exam,
+since I would be able to give You hints during the exam.
+
+--
+pozdrawiam,
+Marek Rogalski
